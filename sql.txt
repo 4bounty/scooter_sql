@@ -9,8 +9,7 @@ FROM "Orders";
 
 
 SELECT c.login,
-       COUNT(o.id)
+       COUNT(o.id) AS total_orders
 FROM "Couriers" AS c
-LEFT OUTER JOIN "Orders" AS o ON c.id=o."courierId"
-WHERE o."inDelivery"=TRUE
+INNER JOIN "Orders" AS o ON c.id = o."courierId" AND o."inDelivery" = TRUE
 GROUP BY c.login;
