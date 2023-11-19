@@ -1,13 +1,17 @@
-#Денис Ромашкин 10я когорта, Дипломный проект
-import sender_stand_requests
+#Денис Ромашкин 10я когорта, Дипломный проект. Инженер по тестированию плюс
+import pytest
+import requests
+import configuration
+import data
 
-# Запрос на создание нового заказа
-def test_get_order_by_track():
-    #Вызываю создание заказа
-    new_response = sender_stand_requests.create_order()
-    #Извлекаю трек из ответа созданного заказа
-    track = new_response.json()['track']
-    #ВВыполняем запрос на получение заказа по треку заказа
-    response = sender_stand_requests.get_orders_by_track(track)
-    #Проверем, что код ответа равен 200
-    assert response.status_code == 200
+@pytest.fixture
+def created_order():
+    response = requests.post(configuration.BASE_URL + configuration.KITS_PATH, json=data.orders_body)
+    assert response.status_code == 201
+    response = response.json()
+    return response.get("track")
+
+def test_get_order_by_track(created_order):
+        url = f'{configuration.BASE_URL}{configuration.RECEIVE_ORDER}{created_order}'
+        response = requests.get(url)
+        assert response.status_code == 200
